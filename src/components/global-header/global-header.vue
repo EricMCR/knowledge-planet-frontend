@@ -1,6 +1,6 @@
 <template>
     <a-layout-header class="header">
-        <div class="header-logo">
+        <div class="header-logo" @click="$router.push('homePage')">
             <img src="../../assets/logo.png" width="40" height="40"/>
             <h3 class="subtitle is-4">Knowledge Planet</h3>
         </div>
@@ -9,7 +9,7 @@
             <template v-if="isLogin">
                 <a-dropdown :trigger="['click']" style="cursor: pointer;">
                     <div style="display: flex; align-items: center;">
-                        <h5 class="subtitle is-5">Welcome {{ username }}</h5>
+                        <h5 class="subtitle is-5">{{ username }}</h5>
                         <a-avatar
                             shape="square"
                             size="default"
@@ -20,8 +20,8 @@
                     </div>
 
                     <a-menu slot="overlay">
-                        <a-menu-item @click="changePwd">修改密码</a-menu-item>
-                        <a-menu-item @click="logout">退出登录</a-menu-item>
+                        <a-menu-item @click="changePwd">Change password</a-menu-item>
+                        <a-menu-item @click="logout">Sign out</a-menu-item>
                     </a-menu>
                 </a-dropdown>
             </template>
@@ -180,7 +180,7 @@ export default {
     height: 40px;
     display: flex;
     align-items: center;
-    cursor: default;
+    cursor: pointer;
 }
 .header .header-logo h3 {
     padding: 0 10px;
@@ -192,6 +192,7 @@ export default {
     height: 40px;
     display: flex;
     align-items: center;
+    justify-content: end;
 }
 .header .header-right h5 {
     padding: 0 10px;

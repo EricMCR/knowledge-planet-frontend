@@ -50,11 +50,11 @@ export default {
             },
             rules: {
                 username: [
-                    {required: true, message: '请输入账号', trigger: 'change'},
-                    {max: 11, message: '手机号不正确', trigger: 'change'}
+                    {required: true, message: 'Please input username', trigger: 'change'},
+                    {min: 4, message: 'Minimum 4 digits', trigger: 'change'}
                 ],
                 password: [
-                    {required: true, message: '请输入密码', trigger: 'change'}
+                    {required: true, message: 'Please input password', trigger: 'change'}
                 ],
             },
             rememberMe: false,
@@ -87,7 +87,7 @@ export default {
                         if (!res.data.success) {
                             this.$message.warning(res.data.desc);
                         } else {
-                            this.$message.success("登录成功")
+                            this.$message.success("Sign in successfully")
                             if (this.rememberMe) {
                                 this.rememberLoginInfo();
                             } else {

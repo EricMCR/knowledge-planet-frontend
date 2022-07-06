@@ -61,11 +61,14 @@ export default {
             },
             rules: {
                 username: [
-                    {required: true, message: '请输入账号', trigger: 'change'},
-                    {max: 11, message: '手机号不正确', trigger: 'change'}
+                    {required: true, message: 'Please input username', trigger: 'change'},
+                    {min: 4, message: 'Minimum 4 digits', trigger: 'change'},
+                    {max: 20, message: 'Maximum 20 digits', trigger: 'change'}
                 ],
                 password: [
-                    {required: true, message: '请输入密码', trigger: 'change'}
+                    {required: true, message: 'Please input password', trigger: 'change'},
+                    {min: 8, message: 'Minimum 8 digits', trigger: 'change'},
+                    {max: 30, message: 'Maximum 30 digits', trigger: 'change'}
                 ],
                 checkPassword: [
                     {validator: validateCheckPassword, trigger: 'change'}
@@ -96,8 +99,8 @@ export default {
                         if (!res.data.success) {
                             this.$message.warning(res.data.desc);
                         } else {
-                            this.$message.success("注册成功")
-                            this.$router.push('/homePage');
+                            this.$message.success("Sign up successfully")
+                            this.$router.push('/login');
 
                         }
                     })

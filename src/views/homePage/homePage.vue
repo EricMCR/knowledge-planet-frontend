@@ -4,49 +4,42 @@
 
         </global-header>
         <a-layout>
-            <a-layout-sider width="200" style="background: #fff" collapsible :collapsedWidth="80">
-                <a-menu
-                    mode="inline"
-                    @select="handleMenuSelect"
-                    :style="{ height: '100%', borderRight: 0 }"
-                    :selectedKeys="selectedMenuKeys" theme="dark"
-                >
-                    <template v-for="item in menuList">
-                        <a-sub-menu v-if="item.type === 1" :key="item.url">
-                            <span slot="title">
-                                <a-icon :type="item.icon" />
-                                <span>{{item.title}}</span>
-                            </span>
-                            <a-menu-item v-for="subItem in item.subMenuList" :key="subItem.url" :disabled="item.disabled">
-                                <a-icon :type="subItem.icon" />
-                                <span>{{subItem.title}}</span>
-                            </a-menu-item>
-                        </a-sub-menu>
-                        <a-menu-item v-if="item.type === 2" :key="item.url" :disabled="item.disabled">
-                            <a-icon :type="item.icon" />
-                            <span>{{item.title}}</span>
-                        </a-menu-item>
-                    </template>
+            <a-layput-content class="main-content">
+                <div class="left-sider">
+                    <div class="username-text">Eric</div>
+                    <a-divider style="background-color: #b6bbc0;"></a-divider>
+                    <div>Your Knowledge Graph</div>
+                    <a-list item-layout="horizontal" :data-source="myGraphList">
+                        <a-list-item slot="renderItem" slot-scope="item">
+                            <a-list-item-meta
+                                :description="item.description"
+                            >
+                                <a slot="title" href="https://www.antdv.com/">{{ item.name }}</a>
+                            </a-list-item-meta>
+                        </a-list-item>
+                    </a-list>
+                </div>
 
-                </a-menu>
-            </a-layout-sider>
-            <a-layout>
-                <a-layout-content>
-                    <a-tabs v-show="tabList.length"
-                            class="frame-tabs" type="editable-card"
-                            style="height: 100%; padding-left: 1px;" :tabBarStyle="{margin: 0}"
-                            @edit="onEdit" :activeKey="currentTabKey"
-                            @change="changeTab" :tabBarGutter = 0
-                            hideAdd :animated="false">
-                        <a-tab-pane v-for="item in tabList" :key="item.url" :tab="item.title" :closable="true" :forceRender="false">
-                            <iframe class="tab-frame" :src="item.url" :style="{height:(curHeight - 105)+'px'}"></iframe>
-                        </a-tab-pane>
-                    </a-tabs>
+                <div class="main-box">
+                    <div class="title-box">Popular knowledge graphs</div>
+                    <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="popularGraphList">
+                        <a-list-item slot="renderItem" slot-scope="item">
+                            <a-card class="graph-card">
+                                <a class="graph-title" slot="title">
+                                    {{item.name}}
+                                </a>
+                                <div slot="extra">
+                                    created by <a class="username-text">{{item.username}}</a>
+                                </div>
+                                <div class="desc">{{ item.description }}</div>
+                                <div class="bottom-info"><a-icon style="margin-right: 5px;" type="eye" /> views: {{item.views}}   Updated {{item.updatedTime}}</div>
 
-<!--                    <charts-page v-show="!tabList.length"></charts-page>-->
-                </a-layout-content>
+                            </a-card>
+                        </a-list-item>
+                    </a-list>
+                </div>
 
-            </a-layout>
+            </a-layput-content>
         </a-layout>
 
     </a-layout>
@@ -61,6 +54,40 @@ export default {
     name: "homePage",
     data() {
         return {
+
+            myGraphList: [
+                {
+                    id: 212332131,
+                    name: "Graph 1",
+                    description: "This is my first knowledge graph.",
+                    views: 21
+                },
+                {
+                    id: 212387231,
+                    name: "Graph 2",
+                    description: "This is my second knowledge graph.",
+                    views: 322
+                }
+            ],
+
+            popularGraphList: [
+                {
+                    id: 212332131,
+                    name: "Graph 1",
+                    description: "This is my first knowledge graph.",
+                    views: 21,
+                    username: "MCR",
+                    updatedTime: "Apr 11"
+                },
+                {
+                    id: 212387231,
+                    name: "Graph 2",
+                    description: "This is my second knowledge graph.",
+                    views: 322,
+                    username: "MCR",
+                    updatedTime: "Apr 11"
+                }
+            ],
 
             //侧边菜单列表
             menuList: menuList,
@@ -194,14 +221,53 @@ export default {
 .full-height {
     height: 100%;
 }
-.frame-tabs .ant-tabs-top-content, .ant-tabs-tabpane, .tab-frame {
-    height: 100%;
+.main-content {
+    padding-top: 20px;
+    margin: 0px auto;
     width: 100%;
+    max-width: 1280px;
+    min-height: 600px;
+    display: flex;
+    justify-content: space-around;
+}
+.main-content .left-sider {
+    padding: 10px;
+    width: 30%;
+}
+.main-content .main-box {
+    padding-top: 10px;
+    width: 66%;
+}
+.main-content .left-sider .username-text {
+    font-size: 25px;
+    font-weight: lighter;
+}
+.main-box .title-box {
+    font-size: 22px;
+    font-weight: lighter;
+}
 
+.main-box .popular-graph-list {
+    padding: 15px 0;
 }
-.frame-tabs .tab-frame {
-    width: calc(100% - 14px);
-    margin: 7px;
-    border-radius: 15px;
+
+.main-box .graph-card .username-text {
+    font-size: 16px;
+    font-weight: normal;
+    color: black;
 }
+
+.main-box .graph-card .bottom-info {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.main-box .graph-card .graph-title {
+    cursor: pointer;
+    color: #0969da;
+    text-decoration: none;
+    font-size: 19px;
+}
+
 </style>
