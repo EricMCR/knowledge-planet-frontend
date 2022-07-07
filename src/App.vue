@@ -8,16 +8,17 @@
 
 <script>
 import zh_CN from 'ant-design-vue/lib/locale-provider/zh_CN';
+import en_GB from 'ant-design-vue/lib/locale-provider/en_GB';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import {mapMutations} from "vuex";
 
-moment.locale('zh-cn');
+moment.locale('en_GB');
 export default {
     name: 'App',
     data() {
         return {
-            zh_CN,
+            en_GB,
 
             timeRange: 20 * 60 * 1000,  //超时时长（毫秒）
         }

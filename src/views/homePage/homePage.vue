@@ -4,7 +4,7 @@
 
         </global-header>
         <a-layout>
-            <a-layput-content class="main-content">
+            <a-layout-content class="main-content">
                 <div class="left-sider">
                     <div class="username-text">Eric</div>
                     <a-divider style="background-color: #b6bbc0;"></a-divider>
@@ -25,7 +25,7 @@
                     <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="popularGraphList">
                         <a-list-item slot="renderItem" slot-scope="item">
                             <a-card class="graph-card">
-                                <a class="graph-title" slot="title">
+                                <a class="graph-title" slot="title" @click="$router.push('graph/'+item.id)">
                                     {{item.name}}
                                 </a>
                                 <div slot="extra">
@@ -39,7 +39,7 @@
                     </a-list>
                 </div>
 
-            </a-layput-content>
+            </a-layout-content>
         </a-layout>
 
     </a-layout>
