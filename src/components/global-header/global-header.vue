@@ -1,12 +1,13 @@
 <template>
     <a-layout-header class="header">
-        <div class="header-logo" @click="$router.push('homePage')">
+        <div class="header-logo" @click="$router.push('/homePage')">
             <img src="../../assets/logo.png" width="40" height="40"/>
             <h3 class="subtitle is-4">Knowledge Planet</h3>
         </div>
         <div class="header-right">
 
             <template v-if="isLogin">
+                <a-button @click="visibleCreateGraph = true;" type="primary" shape="circle" icon="plus"></a-button>
                 <a-dropdown :trigger="['click']" style="cursor: pointer;">
                     <div style="display: flex; align-items: center;">
                         <h5 class="subtitle is-5">{{ username }}</h5>
@@ -37,7 +38,7 @@
         </div>
 
         <a-modal dialogClass="form-modal" v-model="visible" centered
-                 title="修改密码"
+                 title="Change password"
                  @cancel="handleClose" @ok="submitForm('form')" :width="450">
             <a-form-model ref="form" :model="form" :rules="rules" layout="horizontal" labelAlign="left"
                           :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -53,6 +54,23 @@
                 </a-form-model-item>
             </a-form-model>
         </a-modal>
+
+        <a-modal dialogClass="form-modal" v-model="visibleCreateGraph" centered
+                 title="Create graph"
+                 @cancel="handleGraphClose" @ok="submitGraphForm('createGraphForm')" :width="550">
+            <a-form-model ref="createGraphForm" :model="createGraphForm" :rules="createGraphRules" layout="horizontal" labelAlign="left"
+                          :label-col="labelCol" :wrapper-col="wrapperCol">
+
+                <a-form-model-item label="Graph name" prop="name">
+                    <a-input v-model="createGraphForm.name" placeholder="Please input name"> </a-input>
+                </a-form-model-item>
+                <a-form-model-item label="Description" prop="description">
+                    <a-textarea v-model="createGraphForm.description" placeholder="Graph description"
+                                :auto-size="{ minRows: 3, maxRows: 15 }"> </a-textarea>
+                </a-form-model-item>
+            </a-form-model>
+        </a-modal>
+
     </a-layout-header>
 
 </template>
@@ -100,6 +118,21 @@ export default {
                     { validator: validatePwd, trigger: 'change'}
                 ]
             },
+
+            visibleCreateGraph: false,
+            createGraphForm: {
+                name: '',
+                description: ''
+            },
+            createGraphRules: {
+                name: [
+                    { required: true, message: 'Please input name', trigger: 'change' },
+                    { max: 100, message: 'Name too long', trigger: 'change' }
+                ],
+                description: [
+
+                ]
+            }
         }
     },
     created() {
@@ -136,6 +169,13 @@ export default {
                 comfirmPassword: ''
             }
         },
+        handleGraphClose() {
+            this.$refs['createGraphForm'].clearValidate();
+            this.createGraphForm = {
+                name: '',
+                description: ''
+            }
+        },
         submitForm(formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
@@ -150,9 +190,6 @@ export default {
                         url: '/admin/updatePwd',
                         method: 'POST',
                         data: params,
-                        headers: {
-                            token: this.$store.state.token
-                        }
                     }).then(res => {
                         if (res.data.status == '200') {
                             this.$message.success('操作成功');
@@ -164,7 +201,42 @@ export default {
                     })
                 }
             })
-        }
+        },
+        submitGraphForm(formName) {
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    const modal = this.$info({
+                        title: 'Creating graph...',
+                        footer: null,
+                        content: (
+                            <div>
+                                <a-spin style="margin-left: 100px; margin-top: 5px;">
+                                    <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
+                                </a-spin>
+                            </div>
+                        )
+                    });
+                    let params = {
+                        name: this.createGraphForm.name,
+                        description: this.createGraphForm.description
+                    };
+                    this.$request({
+                        url: '/graph/create',
+                        method: 'POST',
+                        data: params,
+                    }).then(res => {
+                        if (!res.data.success) {
+                            this.$message.warning(res.data.desc);
+                        }else {
+                            const graphId = res.data.data.id;
+                            modal.destroy();
+                            this.$message.success("Graph created successfully")
+                            this.$router.push("/graph/" + graphId);
+                        }
+                    })
+                }
+            })
+        },
     }
 }
 </script>

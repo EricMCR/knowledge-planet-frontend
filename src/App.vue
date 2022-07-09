@@ -1,5 +1,5 @@
 <template>
-    <a-config-provider :locale="zh_CN">
+    <a-config-provider :locale="en_GB">
         <div id="app" @click="handleOperation">
             <router-view></router-view>
         </div>
@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import zh_CN from 'ant-design-vue/lib/locale-provider/zh_CN';
+// import zh_CN from 'ant-design-vue/lib/locale-provider/zh_CN';
 import en_GB from 'ant-design-vue/lib/locale-provider/en_GB';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
+// import moment from 'moment';
+// import 'moment/locale/en_GB';
 import {mapMutations} from "vuex";
 
-moment.locale('en_GB');
+// moment.locale('en_GB');
 export default {
     name: 'App',
     data() {

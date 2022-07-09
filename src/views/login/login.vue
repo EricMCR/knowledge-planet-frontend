@@ -76,7 +76,7 @@ export default {
                 if (valid) {
                     this.loading = true;
                     this.$request({
-                        url: '/user-service/user/login',
+                        url: '/user/login',
                         method: 'POST',
                         data: {
                             username: this.form.username,
