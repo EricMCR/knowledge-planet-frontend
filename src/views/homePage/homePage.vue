@@ -71,22 +71,6 @@ export default {
             ],
 
             popularGraphList: [
-                {
-                    id: 212332131,
-                    name: "Graph 1",
-                    description: "This is my first knowledge graph.",
-                    views: 21,
-                    username: "MCR",
-                    updatedTime: "Apr 11"
-                },
-                {
-                    id: 212387231,
-                    name: "Graph 2",
-                    description: "This is my second knowledge graph.",
-                    views: 322,
-                    username: "MCR",
-                    updatedTime: "Apr 11"
-                }
             ],
 
             //侧边菜单列表
@@ -102,87 +86,27 @@ export default {
         }
     },
     created() {
-        // this.menuIfDisabledCheck();
-        //
-        // //默认打开首页
-        // let data = this.getTabData('/#/chartsPage');
-        // this.addTab(data);
+
+    },
+    mounted() {
+        this.initPopularGraphList();
     },
     methods: {
         ...mapMutations(['removeLogin', 'updateState']),
-        //处理侧边菜单选中事件
-        handleMenuSelect(params) {
-            let data = this.getTabData(params.key);
-            this.selectedMenuKeys[0] = params.key;
-            this.addTab(data);
-        },
-        //根据url在菜单列表中查找页面数据
-        getTabData(url) {
-            for (let item of this.menuList) {
-                if (item.type === 1 && item.subMenuList) {
-                    for (let subItem of item.subMenuList) {
-                        if (subItem.url === url) {
-                            return subItem;
-                        }
-                    }
-                }else if (item.type === 2 && item.url === url) {
-                    return item;
-                }
-            }
-        },
-        //添加tab页
-        addTab(data) {
-            if (this.tabList.every(item => { return item.url !== data.url; })) {
-                this.tabList.push({
-                    title: data.title,
-                    url: data.url
-                })
-            }
-            this.currentTabKey = data.url;
-        },
-        onEdit(targetKey, action) {
-            this[action](targetKey);
-        },
-        remove(targetKey) {
-            this.tabList.splice(this.tabList.findIndex(item => {
-                return item.url === targetKey;
-            }), 1);
-            if (this.tabList.length) {
-                this.currentTabKey = this.tabList[this.tabList.length - 1].url;
-                this.selectedMenuKeys[0] = this.tabList[this.tabList.length - 1].url;
-            }else {
-                this.currentTabKey = '';
-            }
-            if (this.selectedMenuKeys.length && this.selectedMenuKeys[0] === targetKey) {
-                this.selectedMenuKeys.splice(0, 1);
-            }
+        initPopularGraphList() {
+            this.$request({
+                url: '/graph/popularGraphList',
+                method: 'POST',
+                data: {
 
-        },
-        changeTab(activeKey) {
-            this.currentTabKey = activeKey;
-            this.selectedMenuKeys[0] = activeKey;
-        },
-        //处理修改密码窗口的关闭事件
-        handleClose() {
-            this.$refs['form'].clearValidate();
-            this.form = {
-                oldPassword: '',
-                newPassword: '',
-                comfirmPassword: ''
-            }
-        },
-        //菜单权限检查
-        menuIfDisabledCheck() {
-            const auth = JSON.parse(localStorage.getItem('userInfo')).userRole;
-            for (let item of menuList) {
-                if (item.allowedAuth && item.allowedAuth.length) {
-                    if (!item.allowedAuth.includes(auth)) {
-                        item.disabled = true;
-                    }else {
-                        item.disabled = false;
-                    }
+                },
+            }).then(res => {
+                if (!res.data.success) {
+                    this.$message.warning(res.data.desc);
+                }else {
+                    this.popularGraphList = res.data.data;
                 }
-            }
+            })
         },
         submitForm(formName) {
             this.$refs[formName].validate(valid => {

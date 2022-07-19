@@ -112,7 +112,19 @@ export default {
     },
     methods: {
         initGraphData() {
-
+            this.$request({
+                url: '/graph/getGraphById',
+                method: 'POST',
+                data: {
+                    id: this.$route.params.id
+                },
+            }).then(res => {
+                if (!res.data.success) {
+                    this.$message.warning(res.data.desc);
+                }else {
+                    this.graphInfo = res.data.data;
+                }
+            })
         },
         initGraph() {
             this.graph = this.$echarts.init(document.getElementById('graph'));
