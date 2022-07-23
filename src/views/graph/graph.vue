@@ -87,6 +87,27 @@
                 <a-button icon="plus-square" @click="handleAppendNode"></a-button>
             </template>
         </a-modal>
+
+        <a-modal dialogClass="relation-modal" v-model="visibleRelationInfo" :width="450"
+                 centered :closable="false">
+            <template slot="title">
+                <div v-if="!relationInfoEditable">{{relationInfo.relationship}}</div>
+                <a-input v-else v-model="relationUpdateForm.relationship" placeholder="Please input relationship"></a-input>
+            </template>
+            <a-form-model ref="relationForm" :model="relationInfo" :rules="relationRules" layout="horizontal" labelAlign="left"
+                          :label-col="{ span: 6 }" :wrapper-col="{ span: 17 }">
+                <a-form-model-item label="Source Node" prop="sourceName">
+                    {{relationInfo.sourceName}}
+                </a-form-model-item>
+                <a-form-model-item label="Target Node" prop="sourceName">
+                    {{relationInfo.targetName}}
+                </a-form-model-item>
+            </a-form-model>
+            <template slot="footer">
+                <a-button v-if="!relationInfoEditable" icon="edit" @click="handleRelationEdit"></a-button>
+                <a-button v-else icon="check" @click="handleRelationUpdate"></a-button>
+            </template>
+        </a-modal>
     </a-layout>
 </template>
 
@@ -167,7 +188,30 @@ export default {
                 updateTime: ""
             },
             visibleNodeInfo: false,
-            nodeInfoEditable: false
+            nodeInfoEditable: false,
+
+            visibleRelationInfo: false,
+            relationInfoEditable: false,
+            relationInfo: {
+                createTime: "",
+                graphId: 0,
+                id: 0,
+                isDelete: 0,
+                relationship: "",
+                source: "",
+                sourceName: "",
+                target: "",
+                targetName: "",
+                updateTime: ""
+            },
+            relationRules: {
+                name: [
+                    {required: true, message: 'Please input relationship', trigger: 'change'}
+                ]
+            },
+            relationUpdateForm: {
+                relationship: ''
+            }
         }
     },
     created() {
@@ -220,7 +264,7 @@ export default {
                             edgeLabel: {
                                 show: true,
                                 formatter: (param) => {
-                                    return this.rels[param.dataIndex].relationship;
+                                    return param.data.relationship;
                                 },
                                 fontSize: 15
                             },
@@ -271,45 +315,6 @@ export default {
                 backgroundColor: '#FAFAFA',
                 animationDurationUpdate: 0,
                 animationEasingUpdate: 'quinticInOut',
-                // tooltip: {
-                //     show: true,
-                //     triggerOn: 'click',
-                //     enterable: true,
-                //     confine: true,
-                //     extraCssText: 'width: 300px; white-space: pre-wrap;box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);',
-                //     formatter: (param) => {
-                //         if (this.nodes[param.dataIndex].content != null) {
-                //             let htmlRoot = document.createElement("div");
-                //             htmlRoot.className = "node-click-box";
-                //             let h5 = document.createElement("h5");
-                //             h5.innerText = param.name;
-                //             let p = document.createElement("p");
-                //             p.innerText = this.nodes[param.dataIndex].content;
-                //             htmlRoot.append(h5, p);
-                //
-                //             let btns = document.createElement("div");
-                //             btns.className = "btn-group";
-                //
-                //             let btn1 = document.createElement("a-button");
-                //             btn1.setAttribute("type", "primary")
-                //             btn1.setAttribute("icon", "plus")
-                //             btn1.onclick = () => {
-                //                 alert("ASD")
-                //             }
-                //
-                //             btns.append(btn1);
-                //
-                //             htmlRoot.append(btns);
-                //             return htmlRoot;
-                //             // return "<h5>" + param.name + "</h5>" + this.nodes[param.dataIndex].content;
-                //         }
-                //     },
-                //     backgroundColor: '#f8f9fa',
-                //     textStyle: {
-                //         color: '#323030'
-                //     },
-                //     padding: 10
-                // },
                 toolbox: {
                     feature: {
                         myToolNewNode: {
@@ -330,6 +335,12 @@ export default {
                 if (params.dataType === 'node') {
                     this.nodeInfo = params.data;
                     this.visibleNodeInfo = true;
+                }
+                if (params.dataType === 'edge') {
+                    this.relationInfo = params.data;
+                    this.relationInfo.sourceName = this.getNodeNameById(this.relationInfo.source);
+                    this.relationInfo.targetName = this.getNodeNameById(this.relationInfo.target);
+                    this.visibleRelationInfo = true;
                 }
 
             });
@@ -477,6 +488,43 @@ export default {
             this.nodeForm.sourceName = this.nodeInfo.name;
             this.nodeFormType = 2;
             this.visibleEditNode = true;
+        },
+        handleRelationEdit() {
+            this.relationUpdateForm.relationship = this.relationInfo.relationship;
+            this.relationInfoEditable = true;
+        },
+        handleRelationUpdate() {
+            if (this.relationUpdateForm.relationship === this.relationInfo.relationship) {
+                this.relationInfoEditable = false;
+            }else {
+                let params = {
+                    id: this.relationInfo.id,
+                    relationship: this.relationUpdateForm.relationship
+                }
+                this.$request({
+                    url: '/relation/update',
+                    method: 'POST',
+                    data: params
+                }).then(res => {
+                    if (res.data.success) {
+                        this.relationInfo = res.data.data;
+                        this.relationInfo.sourceName = this.getNodeNameById(this.relationInfo.source);
+                        this.relationInfo.targetName = this.getNodeNameById(this.relationInfo.target);
+                        this.relationInfoEditable = false;
+                        this.$message.success("Update successfully")
+                        this.graph.showLoading();
+                        this.initGraphData();
+                    } else {
+                        this.$message.warn(res.data.desc)
+                    }
+                })
+            }
+        },
+        getNodeNameById(id) {
+            const node = this.nodes.find((node) => {
+                return node.id.toString() === id;
+            })
+            return node.name;
         }
     },
 
