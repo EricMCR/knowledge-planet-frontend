@@ -21,6 +21,7 @@
                     </div>
 
                     <a-menu slot="overlay">
+                        <a-menu-item @click="myGraphs">My graphs</a-menu-item>
                         <a-menu-item @click="changePwd">Change password</a-menu-item>
                         <a-menu-item @click="logout">Sign out</a-menu-item>
                     </a-menu>
@@ -149,6 +150,12 @@ export default {
             this.username = userInfo.username;
             const index = Math.round(Math.random() * 3);
             this.color = this.colorList[index];
+        },
+        myGraphs() {
+            const routeData = this.$router.resolve({
+                path: '/user/' + this.username,
+            });
+            window.open(routeData.href, '_blank');
         },
         //修改密码
         changePwd() {

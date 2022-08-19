@@ -5,18 +5,29 @@
         </global-header>
         <a-layout>
             <a-layout-content class="main-content">
+                <div class="left-sider">
+                    <div class="username-text">{{ this.username }}</div>
+                    <a-divider style="background-color: #b6bbc0;"></a-divider>
+                    <div>{{ userGraphList.length }} graphs</div>
+                    <div>{{ totalViews }} views</div>
+                </div>
 
                 <div class="main-box">
-                    <div class="title-box">Popular knowledge graphs</div>
-                    <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="popularGraphList">
+                    <div class="title-box">
+                        <a-input-search
+                            v-model="searchText"
+                            placeholder="Find a graph..."
+                            enter-button
+                            :loading="searchLoading"
+                            @search="onSearch"
+                        />
+                    </div>
+                    <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="userGraphList">
                         <a-list-item slot="renderItem" slot-scope="item">
                             <a-card class="graph-card">
                                 <a class="graph-title" slot="title" @click="openPage('/graph/'+item.id)">
                                     {{item.name}}
                                 </a>
-                                <div slot="extra">
-                                    created by <a class="username-text" @click="openPage('/user/'+item.username)">{{item.username}}</a>
-                                </div>
                                 <div class="desc">{{ item.description }}</div>
                                 <div class="bottom-info">
                                     <a-icon style="margin-right: 5px;" type="eye" /> views: {{item.views}}
@@ -38,68 +49,78 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import {menuList} from './menuConfig'
 
 export default {
-    name: "homePage",
+    name: "user",
     data() {
         return {
-
-            myGraphList: [
-                {
-                    id: 212332131,
-                    name: "Graph 1",
-                    description: "This is my first knowledge graph.",
-                    views: 21
-                },
-                {
-                    id: 212387231,
-                    name: "Graph 2",
-                    description: "This is my second knowledge graph.",
-                    views: 322
-                }
+            userGraphList: [
             ],
+            username: '',
+            searchText: '',
+            searchLoading: false,
 
-            popularGraphList: [
-            ],
-
-            //侧边菜单列表
-            menuList: menuList,
-            selectedMenuKeys: ['/#/chartsPage'],
-
-            //当前标签页列表
-            tabList: [],
-            currentTabKey: '',
+            totalGraphs: 0,
+            totalViews: 0,
 
             curHeight: document.body.clientHeight,
 
         }
     },
     created() {
-
+        let userInfo = JSON.parse(this.$store.state.userInfoText);
+        this.username = userInfo.username;
     },
     mounted() {
-        this.initPopularGraphList();
+        this.initUserGraphList();
     },
     methods: {
         ...mapMutations(['removeLogin', 'updateState']),
-        initPopularGraphList() {
+        initUserGraphList() {
             this.$request({
-                url: '/graph/popularGraphList',
+                url: '/user/userGraphList',
                 method: 'POST',
                 data: {
-
+                    username: this.$route.params.username
                 },
             }).then(res => {
                 if (!res.data.success) {
                     this.$message.warning(res.data.desc);
                 }else {
-                    this.popularGraphList = res.data.data;
-                    this.popularGraphList.map( graph => {
+                    this.userGraphList = res.data.data;
+                    this.totalGraphs = this.userGraphList.length;
+                    this.userGraphList.map( graph => {
+                        graph.createTime = this.formatDate(graph.createTime);
+                        graph.updateTime = this.formatDate(graph.updateTime);
+                    })
+                    let views = 0;
+                    this.userGraphList.forEach( graph => {
+                        views += graph.views;
+                    } )
+                    this.totalViews = views;
+                }
+            })
+        },
+        onSearch() {
+            this.searchLoading = true;
+            this.$request({
+                url: '/user/userGraphList',
+                method: 'POST',
+                data: {
+                    username: this.$route.params.username,
+                    searchText: this.searchText
+                },
+            }).then(res => {
+                if (!res.data.success) {
+                    this.$message.warning(res.data.desc);
+                }else {
+                    this.userGraphList = res.data.data;
+                    this.userGraphList.map( graph => {
                         graph.createTime = this.formatDate(graph.createTime);
                         graph.updateTime = this.formatDate(graph.updateTime);
                     })
                 }
+                this.searchLoading = false;
             })
         },
         submitForm(formName) {
@@ -131,15 +152,15 @@ export default {
                 }
             })
         },
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes();
+        },
         openPage(path) {
             const routeData = this.$router.resolve({
                 path: path,
             });
             window.open(routeData.href, '_blank');
-        },
-        formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes();
         }
     }
 }
@@ -160,14 +181,14 @@ export default {
 }
 .main-content .left-sider {
     padding: 10px;
-    width: 30%;
+    width: 25%;
 }
 .main-content .main-box {
     padding-top: 10px;
-    width: 90%;
+    width: 71%;
 }
 .main-content .left-sider .username-text {
-    font-size: 25px;
+    font-size: 30px;
     font-weight: lighter;
 }
 .main-box .title-box {

@@ -9,14 +9,17 @@
                 <a-divider style="background-color: #cad0d5; margin: 10px 0;"></a-divider>
                 <div class="center-box">
                     <div class="left-sider">
-                        <div>{{ graphInfo.createTime }}</div>
-                        <div>Created by {{ graphInfo.username }}</div>
+                        <div>Created by <span class="username-text">{{ graphInfo.username }}</span></div>
+                        <div>Updated  {{ graphInfo.updateTime }}</div>
                         <div>
                             <a-icon style="margin-right: 5px;" type="eye"/>
                             {{ graphInfo.views }} views
                         </div>
                         <div>{{ graphInfo.description }}</div>
-                        <a-button @click="updateGraph" type="primary">Update Graph</a-button>
+                        <template v-if="isOwner">
+                            <a-button @click="updateGraph" type="primary">Update Graph</a-button>
+                        </template>
+
                     </div>
 
                     <div class="main-box">
@@ -69,7 +72,7 @@
         </a-modal>
 
         <a-modal dialogClass="node-modal" v-model="visibleNodeInfo" :width="450"
-            centered :closable="false">
+            centered :closable="false" :footer="isOwner?footer:null">
             <template slot="title">
                 <div v-if="!nodeInfoEditable">{{nodeInfo.name}}</div>
                 <a-input v-else v-model="nodeUpdateForm.name" placeholder="Please input name"></a-input>
@@ -79,7 +82,7 @@
                         :auto-size="{ minRows: 2, maxRows: 15 }"></a-textarea>
             <template slot="footer">
                 <a-popconfirm title="Are you sure delete this node?" ok-text="Yes" cancel-text="No"
-                    @confirm="deleteNode">
+                              @confirm="deleteNode">
                     <a-button icon="delete" type="danger"></a-button>
                 </a-popconfirm>
                 <a-button v-if="!nodeInfoEditable" icon="edit" @click="handleNodeEdit"></a-button>
@@ -89,7 +92,7 @@
         </a-modal>
 
         <a-modal dialogClass="relation-modal" v-model="visibleRelationInfo" :width="450"
-                 centered :closable="false">
+                 centered :closable="false" :footer="isOwner?footer:null">
             <template slot="title">
                 <div v-if="!relationInfoEditable">{{relationInfo.relationship}}</div>
                 <a-input v-else v-model="relationUpdateForm.relationship" placeholder="Please input relationship"></a-input>
@@ -121,7 +124,7 @@ export default {
                 name: "Graph 1",
                 description: "This is a graph.",
                 createTime: "2022.7.20",
-                updatedTime: "2022.8.20",
+                updateTime: "2022.8.20",
                 views: 23,
                 username: "Eric",
                 userId: 23
@@ -211,7 +214,9 @@ export default {
             },
             relationUpdateForm: {
                 relationship: ''
-            }
+            },
+
+            isOwner: false
         }
     },
     created() {
@@ -234,6 +239,9 @@ export default {
                     this.$message.warning(res.data.desc);
                 } else {
                     this.graphInfo = res.data.data;
+                    this.graphInfo.createTime = this.formatDate(this.graphInfo.createTime);
+                    this.graphInfo.updateTime = this.formatDate(this.graphInfo.updateTime);
+                    this.checkIsOwner();
                 }
             })
         },
@@ -393,6 +401,10 @@ export default {
                 relationship: ''
             }
             this.nodeFormType = 1;
+            if (!this.isOwner) {
+                this.$message.warn("Insufficient permissions")
+                return;
+            }
             this.visibleEditNode = true;
         },
         submitNodeForm(formName) {
@@ -520,11 +532,27 @@ export default {
                 })
             }
         },
+        checkIsOwner() {
+            if (!this.$store.getters.isLogin) {
+                this.isOwner = false;
+            }else {
+                let userInfo = JSON.parse(this.$store.state.userInfoText);
+                if (userInfo.username === this.graphInfo.username) {
+                    this.isOwner = true;
+                }else {
+                    this.isOwner = false;
+                }
+            }
+        },
         getNodeNameById(id) {
             const node = this.nodes.find((node) => {
                 return node.id.toString() === id;
             })
             return node.name;
+        },
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes();
         }
     },
 
@@ -583,5 +611,8 @@ export default {
     width: 200px;
     height: 60px;
     z-index: 5;
+}
+.username-text {
+    font-size: 20px;
 }
 </style>

@@ -30,6 +30,11 @@ export const routes = [
         component: () => import('@/views/graph/graph.vue')
     },
     {
+        path: '/user/:username',
+        name: 'User Page',
+        component: () => import('@/views/user/user.vue')
+    },
+    {
         path: '/chartsPage',
         name: '图表页',
         component: () => import('@/components/charts-page/chartsPage.vue')
