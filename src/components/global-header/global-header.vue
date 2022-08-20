@@ -4,6 +4,14 @@
             <img src="../../assets/logo.png" width="40" height="40"/>
             <h3 class="subtitle is-4">Knowledge Planet</h3>
         </div>
+        <a-input-search
+            class="globalSearchBox"
+            v-model="globalSearchText"
+            placeholder="Find a graph..."
+            enter-button
+            :loading="globalSearchLoading"
+            @search="onGlobalSearch"
+        />
         <div class="header-right">
 
             <template v-if="isLogin">
@@ -133,13 +141,25 @@ export default {
                 description: [
 
                 ]
-            }
+            },
+
+            globalSearchText: '',
+            globalSearchLoading: false
         }
     },
     created() {
         this.isLogin = this.$store.getters.isLogin
         if (this.isLogin) {
             this.initLogoutBox();
+        }
+        this.globalSearchText = this.$route.query.keywords?this.$route.query.keywords: '';
+    },
+    watch: {
+        $route(to, from) {
+            if (to.path === '/homepage' && from.path === '/homepage') {
+                this.globalSearchText = to.query.keywords;
+                this.$emit("refreshGraphList");
+            }
         }
     },
     methods: {
@@ -244,6 +264,13 @@ export default {
                 }
             })
         },
+        onGlobalSearch() {
+            if (this.globalSearchText !== '') {
+                this.$router.push({ path: '/homepage', query: { keywords: this.globalSearchText }})
+            }else {
+                this.$router.push({ path: '/homepage'})
+            }
+        }
     }
 }
 </script>
@@ -252,6 +279,9 @@ export default {
 .header {
     padding: 5px 20px;
     height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .header .header-logo {
     float: left;
@@ -277,5 +307,8 @@ export default {
     padding: 0 10px;
     color: #fff;
     margin-bottom: 0;
+}
+.globalSearchBox {
+    width: 40%;
 }
 </style>

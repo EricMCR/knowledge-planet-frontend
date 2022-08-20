@@ -1,14 +1,12 @@
 <template>
     <a-layout class="full-height">
-        <global-header>
-
-        </global-header>
+        <global-header @refreshGraphList="initGraphList"></global-header>
         <a-layout>
             <a-layout-content class="main-content">
 
                 <div class="main-box">
                     <div class="title-box">Popular knowledge graphs</div>
-                    <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="popularGraphList">
+                    <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="graphList">
                         <a-list-item slot="renderItem" slot-scope="item">
                             <a-card class="graph-card">
                                 <a class="graph-title" slot="title" @click="openPage('/graph/'+item.id)">
@@ -45,22 +43,7 @@ export default {
     data() {
         return {
 
-            myGraphList: [
-                {
-                    id: 212332131,
-                    name: "Graph 1",
-                    description: "This is my first knowledge graph.",
-                    views: 21
-                },
-                {
-                    id: 212387231,
-                    name: "Graph 2",
-                    description: "This is my second knowledge graph.",
-                    views: 322
-                }
-            ],
-
-            popularGraphList: [
+            graphList: [
             ],
 
             //侧边菜单列表
@@ -79,23 +62,23 @@ export default {
 
     },
     mounted() {
-        this.initPopularGraphList();
+        this.initGraphList();
     },
     methods: {
         ...mapMutations(['removeLogin', 'updateState']),
-        initPopularGraphList() {
+        initGraphList() {
             this.$request({
-                url: '/graph/popularGraphList',
+                url: '/graph/graphList',
                 method: 'POST',
                 data: {
-
+                    searchText: this.$route.query.keywords ? this.$route.query.keywords : ''
                 },
             }).then(res => {
                 if (!res.data.success) {
                     this.$message.warning(res.data.desc);
                 }else {
-                    this.popularGraphList = res.data.data;
-                    this.popularGraphList.map( graph => {
+                    this.graphList = res.data.data;
+                    this.graphList.map( graph => {
                         graph.createTime = this.formatDate(graph.createTime);
                         graph.updateTime = this.formatDate(graph.updateTime);
                     })
