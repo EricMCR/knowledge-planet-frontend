@@ -20,7 +20,7 @@ export const routes = [
         component: () => import('@/views/register/register.vue')
     },
     {
-        path: '/homePage',
+        path: '/homepage',
         name: 'Home Page',
         component: () => import('@/views/homePage/homePage.vue')
     },

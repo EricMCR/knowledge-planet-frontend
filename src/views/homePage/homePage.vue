@@ -5,7 +5,8 @@
             <a-layout-content class="main-content">
 
                 <div class="main-box">
-                    <div class="title-box">Popular knowledge graphs</div>
+                    <div class="title-box" v-if="this.$route.query.keywords">Search results for "{{ this.$route.query.keywords }}"</div>
+                    <div class="title-box" v-else>Popular knowledge graphs</div>
                     <a-list class="popular-graph-list" :grid="{ gutter: 16, column: 2 }" :data-source="graphList">
                         <a-list-item slot="renderItem" slot-scope="item">
                             <a-card class="graph-card">
@@ -39,7 +40,7 @@ import { mapMutations } from 'vuex'
 import {menuList} from './menuConfig'
 
 export default {
-    name: "homePage",
+    name: "homepage",
     data() {
         return {
 

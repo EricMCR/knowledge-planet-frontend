@@ -1,6 +1,6 @@
 <template>
     <a-layout-header class="header">
-        <div class="header-logo" @click="$router.push('/homePage')">
+        <div class="header-logo" @click="$router.push('/homepage')">
             <img src="../../assets/logo.png" width="40" height="40"/>
             <h3 class="subtitle is-4">Knowledge Planet</h3>
         </div>

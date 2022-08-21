@@ -6,7 +6,7 @@
         <a-layout>
             <a-layout-content class="main-content">
                 <div class="left-sider">
-                    <div class="username-text">{{ this.username }}</div>
+                    <div class="username-text">{{ this.$route.params.username }}</div>
                     <a-divider style="background-color: #b6bbc0;"></a-divider>
                     <div>{{ userGraphList.length }} graphs</div>
                     <div>{{ totalViews }} views</div>

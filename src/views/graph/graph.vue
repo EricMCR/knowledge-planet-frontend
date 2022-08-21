@@ -600,6 +600,10 @@ export default {
     width: 76%;
 }
 
+.form-modal {
+    z-index: 10;
+}
+
 #graph {
     width: 95%;
     min-height: 600px;

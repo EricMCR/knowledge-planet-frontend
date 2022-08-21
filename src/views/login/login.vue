@@ -98,7 +98,7 @@ export default {
                                 userInfo: res.data.data.userInfo
                             });
                             this.updateState();
-                            this.$router.push('/homePage');
+                            this.$router.push('/homepage');
 
                         }
                     })
@@ -133,7 +133,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .main-box {
     min-height: 100%;
     width: 100%;
