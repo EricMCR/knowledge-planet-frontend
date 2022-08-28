@@ -142,7 +142,7 @@ export default {
                         }
                     }).then(res => {
                         if (res.data.status == '200') {
-                            this.$message.success('操作成功');
+                            this.$message.success('Change password successfully');
                             this.visible = false;
                             this.handleClose();
                         }else {

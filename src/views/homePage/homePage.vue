@@ -37,7 +37,6 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import {menuList} from './menuConfig'
 
 export default {
     name: "homepage",
@@ -46,14 +45,6 @@ export default {
 
             graphList: [
             ],
-
-            //侧边菜单列表
-            menuList: menuList,
-            selectedMenuKeys: ['/#/chartsPage'],
-
-            //当前标签页列表
-            tabList: [],
-            currentTabKey: '',
 
             curHeight: document.body.clientHeight,
 

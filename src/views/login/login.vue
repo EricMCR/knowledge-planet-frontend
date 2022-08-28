@@ -62,7 +62,7 @@ export default {
         }
     },
     created() {
-        //用户上次登录选择记住我时，使用cookie数据
+        // Use cookie data the last time a user logs in and selects "remember me"
         if (Cookie.get('username') && Cookie.get('password') && Cookie.get('rememberMe')) {
             this.form.username = Cookie.get('username');
             this.form.password = Cookie.get('password');
@@ -105,13 +105,13 @@ export default {
                 }
             })
         },
-        //记住用户登录信息
+        // Remember user login information
         rememberLoginInfo() {
             Cookie.set('username', this.form.username, {expires: 7});
             Cookie.set('password', this.form.password, {expires: 7});
             Cookie.set('rememberMe', this.rememberMe, {expires: 7});
         },
-        //删除用户登录信息
+        // Delete user login information
         removeLoginInfo() {
             Cookie.remove('username');
             Cookie.remove('password');

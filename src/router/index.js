@@ -33,20 +33,15 @@ export const routes = [
         path: '/user/:username',
         name: 'User Page',
         component: () => import('@/views/user/user.vue')
-    },
-    {
-        path: '/chartsPage',
-        name: '图表页',
-        component: () => import('@/components/charts-page/chartsPage.vue')
-    },
+    }
 ]
 
 const router =  new Router({
     routes
 })
 
-// 导航守卫
-// 使用 router.beforeEach 注册一个全局前置守卫，判断用户是否登陆
+// Navigation guard
+// Use router.beforeEach to register a global preemptive guard to determine if the user is logged in
 router.beforeEach((to, from, next) => {
     let isLogin = store.getters.isLogin;
     if (isLogin) {
@@ -57,7 +52,7 @@ router.beforeEach((to, from, next) => {
     next();
 });
 
-//解决  vue-router路由版本更新产生的问题,导致路由跳转失败抛出该错误
+//Resolving issues arising from vue-router route version updates
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location, onResolve, onReject) {
     if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)

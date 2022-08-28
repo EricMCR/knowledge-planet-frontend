@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
     state: {
-        // 存储token
+        // store token
         token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
         userInfoText: localStorage.getItem('userInfo') ? localStorage.getItem('userInfo') : ''
     },
@@ -14,12 +14,12 @@ const store = new Vuex.Store({
             state.token = localStorage.getItem('token') ? localStorage.getItem('token') : '';
             state.userInfoText = localStorage.getItem('userInfo') ? localStorage.getItem('userInfo') : '';
         },
-        // 修改token，并将token存入localStorage
+        // Modify the token and store the token in localStorage
         changeLogin (state, user) {
             localStorage.setItem('token', user.token);
             localStorage.setItem('userInfo', JSON.stringify(user.userInfo));
         },
-        //退出登录
+        // Sign out
         removeLogin () {
             localStorage.removeItem('token');
             localStorage.removeItem('userInfo');

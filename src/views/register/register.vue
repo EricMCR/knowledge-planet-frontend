@@ -107,13 +107,13 @@ export default {
                 }
             })
         },
-        //记住用户登录信息
+        // Remember user login information
         rememberLoginInfo() {
             Cookie.set('username', this.form.username, {expires: 7});
             Cookie.set('password', this.form.password, {expires: 7});
             Cookie.set('rememberMe', this.rememberMe, {expires: 7});
         },
-        //删除用户登录信息
+        // Delete user login information
         removeLoginInfo() {
             Cookie.remove('username');
             Cookie.remove('password');

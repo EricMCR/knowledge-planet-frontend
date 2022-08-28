@@ -52,14 +52,14 @@
             <a-form-model ref="form" :model="form" :rules="rules" layout="horizontal" labelAlign="left"
                           :label-col="labelCol" :wrapper-col="wrapperCol">
 
-                <a-form-model-item label="原密码" prop="oldPassword">
-                    <a-input-password v-model="form.oldPassword" placeholder="请输入"> </a-input-password>
+                <a-form-model-item label="Old password" prop="oldPassword">
+                    <a-input-password v-model="form.oldPassword" placeholder="Please input old password"> </a-input-password>
                 </a-form-model-item>
-                <a-form-model-item label="设置新密码" prop="newPassword">
-                    <a-input-password v-model="form.newPassword" placeholder="请输入"> </a-input-password>
+                <a-form-model-item label="New password" prop="newPassword">
+                    <a-input-password v-model="form.newPassword" placeholder="Please input new password"> </a-input-password>
                 </a-form-model-item>
-                <a-form-model-item label="确认新密码" prop="confirmPassword">
-                    <a-input-password v-model="form.confirmPassword" placeholder="请输入"> </a-input-password>
+                <a-form-model-item label="Confirm password" prop="confirmPassword">
+                    <a-input-password v-model="form.confirmPassword" placeholder="Please input again"> </a-input-password>
                 </a-form-model-item>
             </a-form-model>
         </a-modal>
@@ -92,7 +92,7 @@ export default {
     data() {
         let validatePwd = (rule, value, callback) => {
             if (value !== this.form.newPassword) {
-                callback(new Error("两次输入不一致"));
+                callback(new Error("The two inputs are inconsistent"));
             } else {
                 callback();
             }
@@ -116,14 +116,14 @@ export default {
             },
             rules: {
                 newPassword: [
-                    { required: true, message: '请设置密码', trigger: 'change' },
-                    { min: 6, message: '密码最少6位', trigger: 'change' }
+                    { required: true, message: 'Please input new password', trigger: 'change' },
+                    { min: 6, message: 'The password contains at least six characters', trigger: 'change' }
                 ],
                 oldPassword: [
-                    { required: true, message: '请输入原密码', trigger: 'change' }
+                    { required: true, message: 'Please input old password', trigger: 'change' }
                 ],
                 confirmPassword: [
-                    { required: true, message: '请再次输入新密码', trigger: 'change' },
+                    { required: true, message: 'Please input again', trigger: 'change' },
                     { validator: validatePwd, trigger: 'change'}
                 ]
             },
@@ -177,17 +177,17 @@ export default {
             });
             window.open(routeData.href, '_blank');
         },
-        //修改密码
+        //change password
         changePwd() {
             this.visible = true;
         },
-        //注销账号
+        //sign out
         logout() {
             this.removeLogin();
             this.updateState();
             this.$router.go(0);
         },
-        //处理修改密码窗口的关闭事件
+        //Handles the closing event of the change password window
         handleClose() {
             this.$refs['form'].clearValidate();
             this.form = {
@@ -219,7 +219,7 @@ export default {
                         data: params,
                     }).then(res => {
                         if (res.data.status == '200') {
-                            this.$message.success('操作成功');
+                            this.$message.success('Change password successfully');
                             this.visible = false;
                             this.handleClose();
                         }else {
